@@ -1,6 +1,7 @@
 const usersRouter = require('express').Router();
-const userController = require('../controllers/users');
+const { getCurrentUser } = require('../controllers/users');
+const auth = require('../middleware/auth');
 
-usersRouter.get('/users/me', userController.getCurrentUser);
+usersRouter.get('/users/me', auth, getCurrentUser);
 
 module.exports = usersRouter;
