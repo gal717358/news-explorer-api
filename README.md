@@ -14,6 +14,6 @@ Final project stage-1 Back end for News-explorer project.
 
 1. Hosted Google Cloud
 
-2. Domain -[ https://www.gal.buzaglo.students.nomoreparties.sbs]
+2. [Domain](https://www.gal.buzaglo.students.nomoreparties.sbs)
 
-3. Link to front - [ https://github.com/SharonJseg/news-explorer-frontend ]
+3.[ Link to front](https://github.com/SharonJseg/news-explorer-frontend)
