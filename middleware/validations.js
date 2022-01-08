@@ -8,11 +8,18 @@ const validateURL = (value, helpers) => {
   return helpers.error('string.uri');
 };
 
-const validateUser = celebrate({
+const validateSignup = celebrate({
   body: Joi.object().keys({
     email: Joi.string().email().required(),
     password: Joi.string().required(),
     name: Joi.string().required(),
+  }),
+});
+
+const validateSignin = celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
   }),
 });
 
@@ -35,5 +42,5 @@ const validateDelete = celebrate({
 });
 
 module.exports = {
-  validateUser, validateArticle, validateDelete,
+  validateSignup, validateSignin, validateArticle, validateDelete,
 };

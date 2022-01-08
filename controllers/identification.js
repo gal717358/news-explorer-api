@@ -1,11 +1,10 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const DEV_KEY = require('../utils/constants');
 const User = require('../models/user');
 const BadRequestError = require('../errors/BadRequestError');
 const ConflictError = require('../errors/ConflictError');
 const AuthenticationError = require('../errors/AuthenticationError');
-const { statusCode, errorText } = require('../utils/constants');
+const { DEV_KEY, statusCode, errorText } = require('../utils/constants');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 module.exports.createUser = (req, res, next) => {
