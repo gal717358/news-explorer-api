@@ -9,6 +9,8 @@ const routerRoutes = require('./routes/index');
 const { requestLogger, errorLogger } = require('./middleware/logger');
 const { DB_ADDRESS } = require('./utils/constants');
 const { limiter } = require('./middleware/limiter');
+const { errorHandler } = require('./middleware/errorHandler');
+const { statusCode, errorText } = require('./utils/constants');
 
 dotenv.config();
 
@@ -34,25 +36,19 @@ app.use(requestLogger);
 app.use('/', routerRoutes);
 
 app.use((req, res, next) => {
-  res.status(404).send({ message: 'Requested resource not found' });
+  res.status(statusCode.notFound).send({ message: errorText.notFound });
   next();
 });
 
 app.get('*', () => {
-  throw new NotFoundError('Requested resource not found');
+  throw new NotFoundError(errorText.notFound);
 });
 
 app.use(limiter);
 app.use(errorLogger);
 app.use(errors());
 
-app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
-
-  res.status(statusCode).send({
-    message: statusCode === 500 ? 'Server error' : message,
-  });
-});
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);

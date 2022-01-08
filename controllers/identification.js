@@ -1,28 +1,28 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const DEV_KEY = require('../utils/constants');
 const User = require('../models/user');
 const BadRequestError = require('../errors/BadRequestError');
 const ConflictError = require('../errors/ConflictError');
 const AuthenticationError = require('../errors/AuthenticationError');
+const { statusCode, errorText } = require('../utils/constants');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 module.exports.createUser = (req, res, next) => {
-  const { email, password } = req.body;
+  const { email, password, name } = req.body;
   bcrypt
     .hash(password, 10)
-    .then((hash) => User.create({ email, password: hash }))
-    .then((user) => res.status(201).send({
+    .then((hash) => User.create({ email, name, password: hash }))
+    .then((user) => res.status(statusCode.success).send({
       email: user.email,
       name: user.name,
-      about: user.about,
-      avatar: user.avatar,
       _id: user._id,
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        throw new BadRequestError('The email and password are required');
+        throw new BadRequestError(errorText.signupError);
       } else {
-        throw new ConflictError('User with this email already exist');
+        throw new ConflictError(errorText.signupError);
       }
     })
     .catch(next);
@@ -35,14 +35,14 @@ module.exports.login = (req, res, next) => {
       if (user) {
         const token = jwt.sign(
           { _id: user._id },
-          NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
+          NODE_ENV === 'production' ? JWT_SECRET : DEV_KEY,
           { expiresIn: '7d' },
         );
-        res.send({ token });
+        res.status(statusCode.ok).send({ token });
       }
     }).catch((err) => {
       if (err) {
-        throw new AuthenticationError('authorization failed');
+        throw new AuthenticationError(errorText.unauthorized);
       }
     })
     .catch(next);

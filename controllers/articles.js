@@ -2,21 +2,12 @@ const Article = require('../models/article');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 const ForbiddenError = require('../errors/ForbiddenError');
-
-const handleArticleErrors = (err) => {
-  const errors = { name: '', link: '' };
-  if (err.name === 'ValidationError') {
-    Object.values(err.errors).forEach(({ properties }) => {
-      errors[properties.path] = properties.message;
-    });
-  }
-  return errors;
-};
+const { statusCode, errorText } = require('../utils/constants');
 
 module.exports.getAllArticles = ('/articles',
 (req, res, next) => {
   Article.find(req.params.id)
-    .then((article) => res.status(200).send({ data: article }))
+    .then((article) => res.status(statusCode.ok).send({ data: article }))
     .catch(next);
 });
 
@@ -30,12 +21,11 @@ module.exports.createArticle = (req, res, next) => {
     keyword, title, text, date, source, link, image, owner,
   })
     .then((article) => {
-      res.status(201).send(article);
+      res.status(statusCode.success).send(article);
     })
     .catch((err) => {
-      const errors = handleArticleErrors(err);
-      if (errors) {
-        throw new BadRequestError({ errors });
+      if (err) {
+        throw new BadRequestError(errorText.articleBadRequest);
       } else {
         next(err);
       }
@@ -47,12 +37,12 @@ module.exports.deleteArticleById = (req, res, next) => {
   Article.findById(req.params.articleId)
     .then((article) => {
       if (!article) {
-        throw new NotFoundError('Article not found in the database');
+        throw new NotFoundError(errorText.articleNotFound);
       }
       if (article.owner.toString() === req.user._id.toString()) {
-        Article.deleteOne(article).then(() => res.send({ data: article }));
+        Article.deleteOne(article).then(() => res.status(statusCode.ok).send({ data: article }));
       } else {
-        throw new ForbiddenError('You are not the owner of this article');
+        throw new ForbiddenError(errorText.deleteArticle);
       }
     })
     .catch(next);

@@ -12,6 +12,7 @@ const validateUser = celebrate({
   body: Joi.object().keys({
     email: Joi.string().email().required(),
     password: Joi.string().required(),
+    name: Joi.string().required(),
   }),
 });
 
@@ -27,6 +28,12 @@ const validateArticle = celebrate({
   }),
 });
 
+const validateDelete = celebrate({
+  params: Joi.object().keys({
+    articleId: Joi.string().required().hex(),
+  }),
+});
+
 module.exports = {
-  validateUser, validateArticle,
+  validateUser, validateArticle, validateDelete,
 };
