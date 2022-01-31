@@ -6,7 +6,7 @@ const { statusCode, errorText } = require('../utils/constants');
 
 module.exports.getAllArticles = ('/articles',
 (req, res, next) => {
-  Article.find(req.params.id)
+  Article.find({ owner: req.user._id })
     .then((article) => res.status(statusCode.ok).send({ data: article }))
     .catch(next);
 });
